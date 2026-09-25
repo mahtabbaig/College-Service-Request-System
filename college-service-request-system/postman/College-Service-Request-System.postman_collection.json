@@ -1,0 +1,170 @@
+{
+  "info": {
+    "name": "College Service Request System",
+    "description": "Nexus Institute of Technology — Service Desk API. Set {{base_url}} (default http://localhost:8000) and {{token}} (from a login response) as collection variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000" },
+    { "key": "token", "value": "" },
+    { "key": "request_id", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"New Student\",\n  \"email\": \"newstudent@college.demo\",\n  \"password\": \"Passw0rd!\",\n  \"role\": \"STUDENT\"\n}" },
+            "url": "{{base_url}}/api/auth/register"
+          }
+        },
+        {
+          "name": "Login (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"student@college.demo\",\n  \"password\": \"Demo@1234\"\n}" },
+            "url": "{{base_url}}/api/auth/login-json"
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/api/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        { "name": "List Users (admin)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/users" } },
+        { "name": "List Staff", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/users/staff" } },
+        {
+          "name": "Create User (admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"New Staff\",\n  \"email\": \"newstaff@college.demo\",\n  \"password\": \"Passw0rd!\",\n  \"role\": \"SERVICE_STAFF\",\n  \"department\": \"IT Support Desk\"\n}" },
+            "url": "{{base_url}}/api/users"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Services & Departments",
+      "item": [
+        { "name": "List Service Categories", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/services" } },
+        { "name": "List Departments", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/departments" } }
+      ]
+    },
+    {
+      "name": "Requests",
+      "item": [
+        {
+          "name": "Create Request",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"service_category\": \"IT_SUPPORT\",\n  \"title\": \"Wi-Fi not working\",\n  \"description\": \"No Wi-Fi in Computer Lab\",\n  \"location\": \"Computer Lab\",\n  \"urgency\": \"URGENT\",\n  \"people_affected\": 40,\n  \"form_data\": { \"issue_type\": \"NETWORK\", \"problem\": \"No signal\" }\n}" },
+            "url": "{{base_url}}/api/requests"
+          }
+        },
+        { "name": "List Requests", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/requests?limit=20" } },
+        { "name": "Get Request", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/requests/{{request_id}}" } },
+        {
+          "name": "Change Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"new_status\": \"IN_PROGRESS\"\n}" },
+            "url": "{{base_url}}/api/requests/{{request_id}}/status"
+          }
+        },
+        {
+          "name": "Assign Staff (lead)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"staff_id\": \"REPLACE_WITH_STAFF_ID\"\n}" },
+            "url": "{{base_url}}/api/requests/{{request_id}}/assign"
+          }
+        },
+        {
+          "name": "Provide Workaround",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"alternative\": \"Library Printer 2\"\n}" },
+            "url": "{{base_url}}/api/requests/{{request_id}}/workaround"
+          }
+        },
+        {
+          "name": "Confirm Resolution (requester)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"accepted\": true\n}" },
+            "url": "{{base_url}}/api/requests/{{request_id}}/confirm"
+          }
+        },
+        { "name": "Get Audit Trail", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/requests/{{request_id}}/audit" } }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        { "name": "List Comments", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/comments/{{request_id}}" } },
+        {
+          "name": "Add Comment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"message\": \"Do I need to visit the office?\"\n}" },
+            "url": "{{base_url}}/api/comments/{{request_id}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        { "name": "List Notifications", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/notifications" } },
+        { "name": "Mark All Read", "request": { "method": "PATCH", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/notifications/read-all" } }
+      ]
+    },
+    {
+      "name": "Impact / SLA",
+      "item": [
+        { "name": "Preview Impact", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/impact/preview?category=HOSTEL&people_affected=50&urgency=URGENT" } },
+        { "name": "Get SLA Config", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/sla/config" } }
+      ]
+    },
+    {
+      "name": "Heatmap / Recurring",
+      "item": [
+        { "name": "Heatmap", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/heatmap?time_range=30d" } },
+        { "name": "Recurring Issues (lead)", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/recurring?window_days=30&threshold=3" } }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        { "name": "Summary", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/dashboard/summary" } },
+        { "name": "Charts", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/dashboard/charts" } }
+      ]
+    },
+    {
+      "name": "Audit (admin)",
+      "item": [
+        { "name": "List Audit Logs", "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }], "url": "{{base_url}}/api/audit?limit=100" } }
+      ]
+    }
+  ]
+}
